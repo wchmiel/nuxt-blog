@@ -1,46 +1,47 @@
 <template>
-  <section class="section">
-    <div class="columns is-mobile">
-      <card title="Free" icon="github-circle">
-        Open source on
-        <a href="https://github.com/buefy/buefy">
-          GitHub
-        </a>
-      </card>
-
-      <card title="Responsive" icon="cellphone-link">
-        <b class="has-text-grey">
-          Every
-        </b>
-        component is responsive
-      </card>
-
-      <card title="Modern" icon="alert-decagram">
-        Built with
-        <a href="https://vuejs.org/">
-          Vue.js
-        </a>
-        and
-        <a href="http://bulma.io/">
-          Bulma
-        </a>
-      </card>
-
-      <card title="Lightweight" icon="arrange-bring-to-front">
-        No other internal dependency
-      </card>
+  <div>
+    <div class="section">
+      <main class="container">
+        <div class="columns is-multiline">
+          <div
+            v-for="article in articles"
+            :key="article.id"
+            class="column is-3"
+          >
+            <Card :article="article" />
+          </div>
+        </div>
+      </main>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
-import Card from '~/components/Card'
+import Card from './../components/Card'
 
 export default {
   name: 'HomePage',
+  components: { Card },
+  data: () => ({
+    articles: []
+  }),
+  created() {
+    const req = require.context('~/articles', false, /\.(md)$/)
 
-  components: {
-    Card
+    req.keys().forEach((filePath) => {
+      const key = filePath.replace('./', '').replace('.md', '')
+      const { attributes } = require(`~/articles/${key}.md`)
+
+      this.articles.push({
+        id: key,
+        slug: key,
+        imgURL: attributes.imgURL,
+        uploadAt: attributes.uploadAt,
+        author: attributes.author,
+        title: attributes.title,
+        desc: attributes.desc
+      })
+    })
   }
 }
 </script>

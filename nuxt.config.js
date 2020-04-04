@@ -1,3 +1,5 @@
+import FMMode from 'frontmatter-markdown-loader/mode'
+
 export default {
   mode: 'universal',
   /*
@@ -23,7 +25,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['@assets/scss/main.scss'],
   /*
    ** Plugins to load before mounting the App
    */
@@ -54,6 +56,14 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
+    extend(config, ctx) {
+      config.module.rules.push({
+        test: /\.md$/,
+        loader: 'frontmatter-markdown-loader',
+        options: {
+          mode: [FMMode.VUE_COMPONENT]
+        }
+      })
+    }
   }
 }
