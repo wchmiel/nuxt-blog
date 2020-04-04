@@ -1,4 +1,12 @@
 import FMMode from 'frontmatter-markdown-loader/mode'
+import hljs from 'highlight.js/lib/highlight'
+import javascript from 'highlight.js/lib/languages/javascript'
+import xml from 'highlight.js/lib/languages/xml'
+import css from 'highlight.js/lib/languages/css'
+
+hljs.registerLanguage('css', css)
+hljs.registerLanguage('xml', xml)
+hljs.registerLanguage('javascript', javascript)
 
 export default {
   mode: 'universal',
@@ -25,7 +33,11 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['@assets/scss/main.scss'],
+  css: [
+    '@assets/scss/main.scss',
+    'github-markdown-css',
+    'highlight.js/styles/github.css'
+  ],
   /*
    ** Plugins to load before mounting the App
    */
@@ -56,12 +68,27 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {
+    extend(config, _ctx) {
       config.module.rules.push({
         test: /\.md$/,
         loader: 'frontmatter-markdown-loader',
         options: {
-          mode: [FMMode.VUE_COMPONENT]
+          mode: [FMMode.VUE_COMPONENT],
+          vue: {
+            root: 'markdown-body'
+          },
+          markdownIt: {
+            html: true,
+            highlight(str, lang) {
+              if (lang && hljs.getLanguage(lang)) {
+                try {
+                  return hljs.highlight(lang, str).value
+                } catch (__) {}
+              }
+
+              return '' // use external default escaping
+            }
+          }
         }
       })
     }
